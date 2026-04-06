@@ -26,9 +26,17 @@ from pyspark.sql.functions import col
 
 result = (
     products
-    .filter((col("low_fats") == "Y") & (col("recyclable") == "Y"))              # using col
-    # .where((products["low_fats"] == "Y") & (products["recyclable"] == "Y"))   # without col, if more than one table with same column name
-    .select("product_id")
+        # using col
+        .filter(
+            (col("low_fats") == "Y") 
+            & (col("recyclable") == "Y")
+        )
+        # without col, if more than one table with same column name
+        # .where(
+        #     (products["low_fats"] == "Y") 
+        #     & (products["recyclable"] == "Y")
+        # )
+        .select("product_id")
 )
 
 result.show()
