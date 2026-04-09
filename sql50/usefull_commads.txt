@@ -59,3 +59,7 @@ git checkout feature/pyspark-practice-1
 git pull origin main
 (resolve conflicts)
 git push origin feature/pyspark-practice-1
+
+
+# turn on or off the function defination pop-up screen that pops-up while typing?
+@id:editor.parameterHints.enabled 
