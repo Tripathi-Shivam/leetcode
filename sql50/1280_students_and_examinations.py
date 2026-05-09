@@ -77,3 +77,21 @@ result = (
         .orderBy("student_id", "student_name", "subject_name")
 )
 result.show()
+
+# practice solution
+from pyspark.sql.functions import col, count
+
+result_df = (
+    students
+        .crossJoin(subjects)
+        .alias("stu")
+        .join(
+            examinations.alias("exam"),
+            on = ["student_id", "subject_name"],
+            how = "left"
+        )
+        .groupBy(col("stu.student_id"), col("stu.student_name"), col("stu.subject_name"))
+        .agg(count(col("exam.subject_name")).alias("attended_exam"))
+        .orderBy("student_id", "subject_name")
+)
+result_df.show()
