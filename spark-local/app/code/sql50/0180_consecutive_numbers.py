@@ -2,6 +2,7 @@ from pyspark.sql import SparkSession
 from pyspark.sql.types import StructType, StructField, IntegerType
 
 spark = SparkSession.builder.getOrCreate()
+spark.sparkContext.setLogLevel("ERROR")
 
 logs_schema = StructType([
     StructField("id", IntegerType(), False),
@@ -21,7 +22,8 @@ logs_data = [
 logs_df = spark.createDataFrame(logs_data, logs_schema)
 logs_df.show()
 
-# solution
+print("--- Solution #1 ---")
+# region: solution
 from pyspark.sql.functions import col, lag, lead
 from pyspark.sql.window import Window
 
@@ -35,7 +37,13 @@ result = (
             (col("num") == col("prev_row"))
             & (col("num") == col("next_row"))
         )
-        .select(col("num").alias("consecutives"))
+        .select(col("num").alias("ConsecutiveNums"))
         .distinct()
 )
 result.show()
+# endregion
+
+print("--- Practice #1 ---")
+# region: practice #1
+
+# endregion

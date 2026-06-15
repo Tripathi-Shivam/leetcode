@@ -3,6 +3,7 @@ from pyspark.sql.types import StructType, StructField, IntegerType, StringType, 
 from datetime import date
 
 spark = SparkSession.builder.getOrCreate()
+spark.sparkContext.setLogLevel("ERROR")
 
 schema = StructType([
     StructField("customer_id", IntegerType(), False),
@@ -25,7 +26,8 @@ data = [
 customer_df = spark.createDataFrame(data, schema)
 customer_df.show()
 
-# solution
+print("--- Solution #1---")
+# region: solution #1
 from pyspark.sql.window import Window
 from pyspark.sql.functions import col, sum, round, row_number
 
@@ -47,3 +49,35 @@ daily_sales_df
     .orderBy("visited_on")
 )
 result_df.show()
+# endregion
+
+print("--- Practice #1---")
+# region: last practice
+
+from pyspark.sql.window import Window
+from pyspark.sql.functions import col, sum, round, date_add, min, lit
+
+window_spec = Window.orderBy(col("visited_on")).rowsBetween(-6, Window.currentRow)
+
+min_date = customer_df.agg(min(col("visited_on"))).collect()[0][0]
+
+result_df = (
+    customer_df
+        .groupBy("visited_on")
+        .agg(sum(col("amount")).alias("amount_sum"))
+        .withColumn("amount", sum(col("amount_sum")).over(window_spec))
+        .filter(col("visited_on") >= lit(date_add(lit(min_date), 6)))
+        .select(
+            col("visited_on"),
+            col("amount"),
+            round(col("amount") / 7, 2).alias("average_amount")
+        )
+        .orderBy("visited_on")
+)
+result_df.show()
+# endregion
+
+print("--- Practice #2---")
+# region: practice
+
+# endregion

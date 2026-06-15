@@ -3,6 +3,7 @@ from pyspark.sql.types import StructType, StructField, IntegerType, DateType
 from datetime import date
 
 spark = SparkSession.builder.getOrCreate()
+spark.sparkContext.setLogLevel("ERROR")
 
 schema = StructType([
     StructField("player_id",   IntegerType(), False),
@@ -22,26 +23,8 @@ data = [
 activity = spark.createDataFrame(data, schema)
 activity.show()
 
-# optimized
-from pyspark.sql.functions import col, lit, round, count, date_sub, min
-from pyspark.sql.window import Window
-
-window_spec = Window.partitionBy(col("player_id"))
-
-total_players = activity.select("player_id").distinct().count()
-
-result = (
-    activity
-        .withColumn("first_login", min(col("event_date")).over(window_spec))
-        .filter(col("first_login") == date_sub(col("event_date"), 1))
-        .select(
-            round(count("player_id") / lit(total_players), 2).alias("fraction")
-        )
-)
-result.show()
-
-
-# my initial solution
+# region: solution
+print("--- Solution #1 ---")
 from pyspark.sql.functions import col, lit, count, countDistinct, lead, row_number, datediff, round
 from pyspark.sql.window import Window
 
@@ -71,3 +54,55 @@ result = (
         )
 )
 result.show()
+# endregion
+
+# region: optimized
+print("--- Optimized ---")
+from pyspark.sql.functions import col, lit, round, count, date_sub, min
+from pyspark.sql.window import Window
+
+window_spec = Window.partitionBy(col("player_id"))
+
+total_players = activity.select("player_id").distinct().count()
+
+result = (
+    activity
+        .withColumn("first_login", min(col("event_date")).over(window_spec))
+        .filter(col("first_login") == date_sub(col("event_date"), 1))
+        .select(
+            round(count("player_id") / lit(total_players), 2).alias("fraction")
+        )
+)
+result.show()
+# endregion
+
+# region: practice #1
+print("--- Practice #1 ---")
+from pyspark.sql.functions import col, min, lead, date_sub, round, count, lit
+from pyspark.sql.window import Window
+
+window_spec = Window.partitionBy(col("player_id")).orderBy(col("event_date").asc())
+
+total_players = activity.select("player_id").distinct().count()
+
+result_df = (
+    activity
+        .withColumn("first_login_date", min(col("event_date")).over(window_spec))
+        .withColumn("next_login_date", lead(col("event_date"), 1).over(window_spec))
+        .filter(
+            (col("event_date") == col("first_login_date"))
+            & (col("first_login_date") == date_sub(col("next_login_date"), 1))
+        )
+        .select(
+            round(
+                count(col("player_id")) / lit(total_players),
+            2).alias("fraction")
+        )
+)
+result_df.show()
+# endregion
+
+# region: practice #2
+print("--- Practice #2 ---")
+
+# endregion

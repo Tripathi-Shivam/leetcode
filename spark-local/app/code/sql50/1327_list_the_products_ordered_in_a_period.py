@@ -3,6 +3,7 @@ from pyspark.sql.types import StructType, StructField, IntegerType, StringType, 
 from datetime import date
 
 spark = SparkSession.builder.getOrCreate()
+spark.sparkContext.setLogLevel("ERROR")
 
 products_schema = StructType([
     StructField("product_id", IntegerType(), False),
@@ -29,7 +30,7 @@ orders_data = [
 products_df = spark.createDataFrame(products_data, products_schema)
 orders_df = spark.createDataFrame(orders_data, orders_schema)
 
-# solution
+# region: solution
 from pyspark.sql.functions import col, date_format, sum
 
 result_df = (
@@ -45,3 +46,8 @@ result_df = (
         .filter(col("unit") >= 100)
 )
 result_df.show()
+# endregion
+
+# region: practice
+
+# endregion

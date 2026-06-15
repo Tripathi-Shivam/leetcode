@@ -3,6 +3,7 @@ from pyspark.sql.types import StructType, StructField, IntegerType, DateType
 from datetime import date
 
 spark = SparkSession.builder.getOrCreate()
+spark.sparkContext.setLogLevel("ERROR")
 
 prices_schema = StructType([
     StructField("product_id",  IntegerType(), False),
@@ -38,7 +39,8 @@ units_sold = spark.createDataFrame(units_sold_data, units_sold_schema)
 prices.show()
 units_sold.show()
 
-# solution
+print("--- Solution #1 ---")
+# region: solution
 from pyspark.sql.functions import col, sum, coalesce, lit, round
 
 result = (
@@ -61,3 +63,10 @@ result = (
         )
 )
 result.show()
+
+# endregion
+
+print("--- Practice #1 ---")
+# region: practice #1
+
+# endregion

@@ -2,6 +2,7 @@ from pyspark.sql import SparkSession
 from pyspark.sql.types import StructType, StructField, IntegerType, StringType
 
 spark = SparkSession.builder.getOrCreate()
+spark.sparkContext.setLogLevel("ERROR")
 
 schema = StructType([
     StructField("employee_id", IntegerType(), False),
@@ -22,7 +23,7 @@ data = [
 employees_df = spark.createDataFrame(data, schema)
 employees_df.show()
 
-# solution
+# region: solution
 from pyspark.sql.functions import col
 
 result_df = (
@@ -33,8 +34,9 @@ result_df = (
         .orderBy(col("e.employee_id").asc())
 )
 result_df.show()
+# endregion
 
-# solution - left_anti
+# region: solution - left_anti
 from pyspark.sql.functions import col
 
 result_df = (
@@ -45,3 +47,9 @@ result_df = (
         .orderBy(col("e.employee_id").asc())
 )
 result_df.show()
+# endregion
+
+# region: practice
+print("----------- Practice Solution ----------")
+
+# endregion

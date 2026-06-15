@@ -2,6 +2,7 @@ from pyspark.sql import SparkSession
 from pyspark.sql.types import StructType, StructField, IntegerType, StringType
 
 spark = SparkSession.builder.getOrCreate()
+spark.sparkContext.setLogLevel("ERROR")
 
 schema = StructType([
     StructField("patient_id", IntegerType(), False),
@@ -20,7 +21,7 @@ data = [
 patients_df = spark.createDataFrame(data, schema)
 patients_df.show()
 
-# solution
+# region: solution
 from pyspark.sql.functions import col
 
 result_df = (
@@ -28,3 +29,9 @@ result_df = (
         .filter(col("conditions").rlike('(^| )DIAB1'))
 )
 result_df.show()
+# endregion
+
+# region: practice
+print("--- Practice ---")
+
+# endregion

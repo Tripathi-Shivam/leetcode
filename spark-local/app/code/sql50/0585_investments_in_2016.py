@@ -2,6 +2,7 @@ from pyspark.sql import SparkSession
 from pyspark.sql.types import StructType, StructField, IntegerType, DoubleType
 
 spark = SparkSession.builder.getOrCreate()
+spark.sparkContext.setLogLevel("ERROR")
 
 schema = StructType([
     StructField("pid", IntegerType(), False),
@@ -21,7 +22,8 @@ data = [
 insurance_df = spark.createDataFrame(data, schema)
 insurance_df.show()
 
-# solution
+print("--- Solution #1 ---")
+# region: solution
 from pyspark.sql.functions import col, lit, concat, count, sum
 from pyspark.sql.window import Window
 
@@ -39,3 +41,9 @@ result_df = (
         .agg(sum(col("tiv_2016")).alias("tiv_2016"))
 )
 result_df.show()
+# endregion
+
+print("--- Practice #1 ---")
+# region: practice
+
+# endregion

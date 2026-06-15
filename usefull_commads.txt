@@ -63,3 +63,10 @@ git push origin feature/pyspark-practice-1
 
 # turn on or off the function defination pop-up screen that pops-up while typing?
 @id:editor.parameterHints.enabled 
+
+# docker commans
+docker-compose down && docker-compose up -d --build
+docker exec -it spark-master /opt/spark/bin/spark-submit /opt/spark-app/code/advanced_sql50/
+
+# usefull PySpark settings
+spark.sparkContext.setLogLevel("ERROR")  # only shows errors, not INFO/WARN

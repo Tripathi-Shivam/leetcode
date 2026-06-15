@@ -27,10 +27,10 @@ from pyspark.sql.functions import col
 
 result = (
     df_world
-    .filter(
-        (col("area") >= 3_000_000) 
-        | (col("population") >= 25_000_000)
-    )
-    .select("name", "population", "area")
+        .filter(
+            (col("area") >= 3_000_000) 
+            | (col("population") >= 25_000_000)
+        )
+        .select("name", "population", "area")
 )
 result.show()

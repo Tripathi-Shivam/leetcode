@@ -2,6 +2,7 @@ from pyspark.sql import SparkSession
 from pyspark.sql.types import StructType, StructField, IntegerType
 
 spark = SparkSession.builder.getOrCreate()
+spark.sparkContext.setLogLevel("ERROR")
 
 schema = StructType([
     StructField("account_id", IntegerType(), False),
@@ -18,7 +19,8 @@ data = [
 accounts_df = spark.createDataFrame(data, schema)
 accounts_df.show()
 
-# solution - using union
+print("--- Solution #1 ---")
+# region: solution - using union
 from pyspark.sql.functions import col, lit, count
 
 low_df = (
@@ -42,18 +44,21 @@ high_df = (
         .withColumn("category", lit("High Salary"))
 )
 
-low_df.show()
-avg_df.show()
-high_df.show()
+# low_df.show()
+# avg_df.show()
+# high_df.show()
 
 result_df = (
     low_df
         .unionAll(avg_df)
         .unionAll(high_df)
+        .select("category", "accounts_count")
 )
 result_df.show()
+# endregion
 
-# solution - using stack
+print("--- Solution #2 ---")
+# region: solution #2 - using stack
 from pyspark.sql.functions import col, lit, when, sum
 
 agg_df = (
@@ -70,6 +75,12 @@ result_df = agg_df.selectExpr("""
         'Low Salary', low,
         'Average Salary', avg,
         'High Salary', high
-    ) AS (category, average_count)
+    ) AS (category, accounts_count)
 """)
 result_df.show()
+# endregion
+
+print("--- Practice #1 ---")
+# region: practice #1
+
+# endregion

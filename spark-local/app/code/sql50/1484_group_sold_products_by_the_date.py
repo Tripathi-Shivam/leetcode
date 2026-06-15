@@ -3,6 +3,7 @@ from pyspark.sql.types import StructType, StructField, StringType, DateType
 from datetime import date
 
 spark = SparkSession.builder.getOrCreate()
+spark.sparkContext.setLogLevel("ERROR")  # only shows errors, not INFO/WARN
 
 schema = StructType([
     StructField("sell_date", DateType(), False),
@@ -22,7 +23,8 @@ data = [
 activities_df = spark.createDataFrame(data, schema)
 activities_df.show()
 
-# solution
+print("--- Solution #1 ---")
+# region: solution #1
 from pyspark.sql.functions import col, collect_set, size, sort_array, concat_ws
 
 result_df = (
@@ -35,3 +37,9 @@ result_df = (
         .orderBy(col("sell_date"))
 )
 result_df.show(truncate = False)
+# endregion
+
+print("--- Practice #1 ---")
+# region: practice #1
+
+# endregion

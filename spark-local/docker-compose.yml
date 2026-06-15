@@ -52,26 +52,26 @@ services:
     networks:
       - spark-net
 
-  jupyter:
-    build: .
-    image: local-pyspark-351:latest
-    container_name: jupyter
-    depends_on:
-      - spark-master
-    ports:
-      - "8888:8888"
-      - "4041:4040"
-    environment:
-      - PYSPARK_MASTER=spark://spark-master:7077
-      - PYSPARK_PYTHON=python3
-      - SPARK_PUBLIC_DNS=localhost
-      - SPARK_UI_PORT=4040
-    volumes:
-      - ./notebooks:/opt/spark-notebooks
-      - ./data:/opt/spark-data
-      - ./app:/opt/spark-app
-    networks:
-      - spark-net
+  # jupyter:
+  #   build: .
+  #   image: local-pyspark-351:latest
+  #   container_name: jupyter
+  #   depends_on:
+  #     - spark-master
+  #   ports:
+  #     - "8888:8888"
+  #     - "4041:4040"
+  #   environment:
+  #     - PYSPARK_MASTER=spark://spark-master:7077
+  #     - PYSPARK_PYTHON=python3
+  #     - SPARK_PUBLIC_DNS=localhost
+  #     - SPARK_UI_PORT=4040
+  #   volumes:
+  #     - ./notebooks:/opt/spark-notebooks
+  #     - ./data:/opt/spark-data
+  #     - ./app:/opt/spark-app
+  #   networks:
+  #     - spark-net
 
 networks:
   spark-net:

@@ -2,6 +2,7 @@ from pyspark.sql import SparkSession
 from pyspark.sql.types import StructType, StructField, IntegerType, StringType
 
 spark = SparkSession.builder.getOrCreate()
+spark.sparkContext.setLogLevel("ERROR")
 
 employee_schema = StructType([
     StructField("id", IntegerType(), False),
@@ -36,7 +37,8 @@ department_df = spark.createDataFrame(department_data, department_schema)
 employee_df.show()
 department_df.show()
 
-# solution
+print("--- Solution #1 ---")
+# region: solution #1
 from pyspark.sql.functions import col, dense_rank
 from pyspark.sql.window import Window
 
@@ -54,3 +56,9 @@ result_df = (
         .select(col("d.name").alias("department"), col("e.name").alias("employee"), col("e.salary"))
 )
 result_df.show()
+# endregion
+
+print("--- Practice #1 ---")
+# region: practice
+
+# endregion

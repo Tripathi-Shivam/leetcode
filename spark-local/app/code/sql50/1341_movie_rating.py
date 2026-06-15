@@ -3,6 +3,7 @@ from pyspark.sql.types import StructType, StructField, IntegerType, StringType, 
 from datetime import date
 
 spark = SparkSession.builder.getOrCreate()
+spark.sparkContext.setLogLevel("ERROR")
 
 # Movies
 movies_schema = StructType([
@@ -59,7 +60,7 @@ movies_df.show(truncate=False)
 users_df.show(truncate=False)
 ratings_df.show(truncate=False)
 
-# solution
+# region: solution
 from pyspark.sql.functions import col, count, date_format, avg
 
 greatest_no_of_movies_df = (
@@ -98,3 +99,41 @@ result_df = (
         .unionAll(highest_avg_rating_df)
 )
 result_df.show()
+# endregion
+
+# region: practice (good solution)
+print("----------- Practice Solution ----------")
+from pyspark.sql.functions import col, count
+
+result_df = (
+    ratings_df.alias("r1")
+        .join(
+            users_df.alias("u"),
+            on = "user_id",
+            how = "inner"
+        )
+        .groupBy(col("u.name"))
+        .agg(count(col("r1.movie_id")).alias("movie_cnt"))
+        .orderBy(col("movie_cnt").desc(), col("u.name").asc())
+        .select(col("name").alias("results"))
+        .limit(1)
+        .unionAll(
+            ratings_df.alias("r2")
+            .join(
+                movies_df.alias("m"),
+                on = "movie_id",
+                how = "inner"
+            )
+            .filter(date_format(col("created_at"), "yyyy-MM") == "2020-02")
+            .groupBy(col("m.title").alias("results"))
+            .agg(avg(col("r2.rating")).alias("avg_rating"))
+            .orderBy(col("avg_rating").desc(), col("results").asc())
+            .select("results")
+            .limit(1)
+        )
+)
+result_df.show()
+# endregion
+
+# region: practice
+# endregion
