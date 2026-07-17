@@ -45,7 +45,7 @@ result_df = (
         .join(
             users_df.alias("u"),
             on = "account",
-            how = "inner"
+            how = "left"
         )
         .groupBy(col("u.account"), col("u.name"))
         .agg(

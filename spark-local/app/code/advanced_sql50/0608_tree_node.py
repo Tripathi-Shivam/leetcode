@@ -54,6 +54,24 @@ result_df = (
 result_df.show()
 # endregion
 
+
+print("--- Solution #2 ---")
+# region: solution #2
+result_df = (
+    tree_df.alias("p")
+        .join(tree_df.alias("c"), on = col("p.id") == col("c.p_id"), how = "left")
+        .select(
+            col("p.id"),
+            when(col("p.p_id").isNull(), lit("Root"))
+            .when(col("c.id").isNull(), lit("Leaf"))
+            .otherwise(lit("Inner"))
+            .alias("type")
+        )
+        .distinct()
+)
+result_df.show()
+# endregion
+
 print("--- Practice #1 ---")
 # region: practice #1
 

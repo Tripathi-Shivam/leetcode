@@ -3,6 +3,7 @@ from pyspark.sql.types import StructType, StructField, IntegerType, DateType
 from datetime import date
 
 spark = SparkSession.builder.getOrCreate()
+spark.sparkContext.setLogLevel("ERROR")
 
 schema = StructType([
     StructField("delivery_id",                IntegerType(), False),
@@ -21,17 +22,18 @@ data = [
     (7, 4, date(2019, 8, 9),  date(2019, 8, 9)),
 ]
 
-delivery = spark.createDataFrame(data, schema)
-delivery.show()
+delivery_df = spark.createDataFrame(data, schema)
+delivery_df.show()
 
-# solution
+print("--- Solution #1 ---")
+# region: solution #1
 from pyspark.sql.functions import col, lit, round, sum, count, min, when
 from pyspark.sql.window import Window
 
 window_spec = Window.partitionBy(col("customer_id")).orderBy(col("order_date"))
 
 result = (
-    delivery
+    delivery_df
         .withColumn("first_order", min(col("order_date")).over(window_spec))
         .filter(col("order_date") == col("first_order"))
         .agg(
@@ -43,3 +45,31 @@ result = (
         )
 )
 result.show()
+# endregion
+
+print("--- Solution #2 ---")
+# region: solution #2
+from pyspark.sql.functions import col, row_number, avg
+from pyspark.sql.window import Window
+
+window_spec = Window.partitionBy(col("customer_id")).orderBy(col("order_date").desc())
+
+result_df = (
+    delivery_df
+        .withColumn("rnk", row_number().over(window_spec))
+        .filter(col("rnk") == 1)
+        .agg(
+            round(
+                100 * avg(when(col("order_date") == col("customer_pref_delivery_date"), lit(1)).otherwise(lit(0))),
+                2
+            ).alias("immediate_percentage")
+        )
+)
+
+result.show()
+# endregion
+
+print("--- Practice #1 ---")
+# region: practice #1
+
+# endregion
